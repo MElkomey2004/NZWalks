@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NZWalks.API.CustomActionFilter;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
@@ -50,32 +51,36 @@ namespace NZWalks.API.Controllers
 
 
         [HttpPost]
-
+        [ValidateModel]
 		public async Task<IActionResult> Create([FromBody] AddRegionRequestDTO addRegionRequestDTO)
         {
-            var regionDomainModel = _mapper.Map<Region>(addRegionRequestDTO);
+            
+           
 
-			regionDomainModel = await _regionRepository.CreateAsync(regionDomainModel);
+                    var regionDomainModel = _mapper.Map<Region>(addRegionRequestDTO);
 
-            var regionDTO = _mapper.Map<RegionDTO>(regionDomainModel);
-            return CreatedAtAction(nameof(GetById) , new {id = regionDomainModel.Id} , regionDTO);
+			        regionDomainModel = await _regionRepository.CreateAsync(regionDomainModel);
 
+                    var regionDTO = _mapper.Map<RegionDTO>(regionDomainModel);
+                    return CreatedAtAction(nameof(GetById) , new {id = regionDomainModel.Id} , regionDTO);
+            
+
+           
         }
         [HttpPut]
         [Route("{id:guid}")]
+        [ValidateModel]
 		public async Task<IActionResult> Update([FromRoute]Guid id,[FromBody] UpdateRegionRequestDTO updateRegionRequestDTO)
         {
+          
+                var regionDomainModel = _mapper.Map<Region>(updateRegionRequestDTO);
 
-            
-            var regionDomainModel = _mapper.Map<Region>(updateRegionRequestDTO);
+			    regionDomainModel = await _regionRepository.UpdateAsync(id , regionDomainModel);
 
-			regionDomainModel = await _regionRepository.UpdateAsync(id , regionDomainModel);
+                if (regionDomainModel == null)
+                    return NotFound();
 
-            if (regionDomainModel == null)
-                return NotFound();
-
-            return Ok(_mapper.Map<RegionDTO>(regionDomainModel));
-
+                return Ok(_mapper.Map<RegionDTO>(regionDomainModel));
         }
 
         [HttpDelete]
