@@ -5,6 +5,7 @@ using NZWalks.API.CustomActionFilter;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
+using System.Net;
 
 namespace NZWalks.API.Controllers
 {
@@ -46,14 +47,19 @@ namespace NZWalks.API.Controllers
             [FromQuery] string? sortBy , [FromQuery] bool? isAscending
             , [FromQuery] int pageNumber = 1, [FromQuery] int pageSize =1000)
         {
-            var walksDomainModel = await _walkRepository.GetAllAsync(filterOn , 
-                filterQuery ,sortBy , isAscending ??true,
-                pageNumber ,
-                pageSize);
 
-            //Map domainMOdel To WalkDTO
+				var walksDomainModel = await _walkRepository.GetAllAsync(filterOn,
+		           filterQuery, sortBy, isAscending ?? true,
+		           pageNumber,
+		           pageSize);
 
-            return Ok(_mapper.Map<List<WalkDTO>>(walksDomainModel));
+
+            
+				//Map domainMOdel To WalkDTO
+
+				return Ok(_mapper.Map<List<WalkDTO>>(walksDomainModel));
+
+
         }
 
         [HttpGet]

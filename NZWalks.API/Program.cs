@@ -9,8 +9,17 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using static System.Net.WebRequestMethods;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+var logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File("Logs/NzWalks_Log.txt" , rollingInterval:RollingInterval.Minute).MinimumLevel.Information().CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
 
 // Add services to the container.
 
@@ -109,11 +118,15 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+//app.UseMiddleware<ExceptionHandlerMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+
 app.UseAuthorization();
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
